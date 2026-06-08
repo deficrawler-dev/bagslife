@@ -436,7 +436,7 @@
   <!-- Logo -->
   <div class="logo-wrap">
     <div class="logo-ring"></div>
-    <img src="logo.png" alt="Bags is Life Logo" id="logo-img"/>
+    <canvas id="logo-canvas" width="130" height="130"></canvas>
   </div>
 
   <!-- Headline -->
@@ -480,6 +480,29 @@
 </div>
 
 <script>
+  // Remove black background from logo using canvas
+  const canvas = document.getElementById('logo-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.style.animation = 'logo-float 3s ease-in-out infinite';
+  canvas.style.filter = 'drop-shadow(0 0 18px #00ff41) drop-shadow(0 0 40px rgba(0,255,65,0.4))';
+
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.src = 'logo.png';
+  img.onload = function() {
+    ctx.drawImage(img, 0, 0, 130, 130);
+    const imageData = ctx.getImageData(0, 0, 130, 130);
+    const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i], g = data[i+1], b = data[i+2];
+      // Make dark/black pixels transparent
+      if (r < 40 && g < 40 && b < 40) {
+        data[i+3] = 0;
+      }
+    }
+    ctx.putImageData(imageData, 0, 0);
+  };
+
   // Copy CA
   function copyCA() {
     const ca = document.getElementById('ca-code').textContent;
@@ -487,21 +510,9 @@
       const btn = document.getElementById('copy-btn');
       btn.textContent = 'COPIED!';
       btn.classList.add('copied');
-      setTimeout(() => {
-        btn.textContent = 'COPY';
-        btn.classList.remove('copied');
-      }, 2000);
+      setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 2000);
     });
   }
-
-  // Glitch effect on logo on hover
-  const logo = document.getElementById('logo-img');
-  logo.addEventListener('mouseover', () => {
-    logo.style.filter = 'drop-shadow(0 0 30px #00ff41) drop-shadow(0 0 80px rgba(0,255,65,0.6)) hue-rotate(20deg)';
-    setTimeout(() => {
-      logo.style.filter = 'drop-shadow(0 0 18px #00ff41) drop-shadow(0 0 40px rgba(0,255,65,0.4))';
-    }, 300);
-  });
 </script>
 </body>
 </html>
