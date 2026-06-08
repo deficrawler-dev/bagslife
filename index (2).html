@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>$BAGSLIFE — Coming Soon</title>
+  <link rel="icon" type="image/png" href="logo.png"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green: #00ff41;
+      --green-dim: #00c832;
+      --green-glow: rgba(0,255,65,0.35);
+      --green-faint: rgba(0,255,65,0.07);
+      --black: #000000;
+      --dark: #050f05;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--black);
+      color: var(--green);
+      font-family: 'Space Mono', monospace;
+      overflow-x: hidden;
+    }
+
+    /* ── SCANLINE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(0,255,65,0.015) 3px,
+        rgba(0,255,65,0.015) 4px
+      );
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* ── GRID BG ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--green-faint) 1px, transparent 1px),
+        linear-gradient(90deg, var(--green-faint) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── RADIAL GLOW CENTER ── */
+    .glow-orb {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(0,255,65,0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      animation: pulse-orb 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse-orb {
+      0%, 100% { opacity: 0.6; transform: translate(-50%,-50%) scale(1); }
+      50% { opacity: 1; transform: translate(-50%,-50%) scale(1.08); }
+    }
+
+    /* ── WRAPPER ── */
+    .wrapper {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      text-align: center;
+      gap: 0;
+    }
+
+    /* ── CORNER BRACKETS ── */
+    .bracket {
+      position: fixed;
+      width: 50px; height: 50px;
+      opacity: 0.4;
+      z-index: 20;
+    }
+    .bracket-tl { top: 24px; left: 24px; border-top: 2px solid var(--green); border-left: 2px solid var(--green); }
+    .bracket-tr { top: 24px; right: 24px; border-top: 2px solid var(--green); border-right: 2px solid var(--green); }
+    .bracket-bl { bottom: 24px; left: 24px; border-bottom: 2px solid var(--green); border-left: 2px solid var(--green); }
+    .bracket-br { bottom: 24px; right: 24px; border-bottom: 2px solid var(--green); border-right: 2px solid var(--green); }
+
+    /* ── TOP TICKER BAR ── */
+    .ticker-wrap {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 36px;
+      overflow: hidden;
+      background: rgba(0,255,65,0.07);
+      border-bottom: 1px solid rgba(0,255,65,0.2);
+      z-index: 100;
+    }
+    .ticker-inner {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      white-space: nowrap;
+      animation: ticker 22s linear infinite;
+    }
+    .ticker-inner span {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--green);
+      padding: 0 40px;
+    }
+    .ticker-inner span.sep { opacity: 0.4; padding: 0 10px; }
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ── LOGO ── */
+    .logo-wrap {
+      margin-top: 20px;
+      position: relative;
+      width: 160px;
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-wrap img {
+      width: 130px;
+      height: 130px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 18px var(--green)) drop-shadow(0 0 40px rgba(0,255,65,0.4));
+      animation: logo-float 3s ease-in-out infinite;
+    }
+    .logo-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1px solid rgba(0,255,65,0.25);
+      animation: ring-spin 8s linear infinite;
+    }
+    .logo-ring::before {
+      content: '';
+      position: absolute;
+      top: -4px; left: 50%;
+      transform: translateX(-50%);
+      width: 8px; height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--green);
+    }
+    @keyframes logo-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    @keyframes ring-spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── HEADLINE ── */
+    .headline {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(60px, 14vw, 120px);
+      letter-spacing: 0.04em;
+      line-height: 0.95;
+      margin-top: 16px;
+      color: var(--green);
+      text-shadow:
+        0 0 20px var(--green),
+        0 0 60px rgba(0,255,65,0.4),
+        0 0 120px rgba(0,255,65,0.15);
+      animation: flicker 6s infinite;
+    }
+    .headline .ticker-sym {
+      color: var(--black);
+      -webkit-text-stroke: 2px var(--green);
+      text-shadow: none;
+    }
+
+    @keyframes flicker {
+      0%, 95%, 100% { opacity: 1; }
+      96% { opacity: 0.85; }
+      97% { opacity: 1; }
+      98% { opacity: 0.7; }
+      99% { opacity: 1; }
+    }
+
+    /* ── SUBTITLE ── */
+    .subtitle {
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(11px, 2.5vw, 14px);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(0,255,65,0.55);
+      margin-top: 10px;
+    }
+
+    /* ── STATUS BOX ── */
+    .status-box {
+      margin-top: 36px;
+      border: 1px solid rgba(0,255,65,0.3);
+      padding: 18px 36px;
+      background: rgba(0,255,65,0.04);
+      position: relative;
+      animation: border-glow 3s ease-in-out infinite;
+    }
+    .status-box::before, .status-box::after {
+      content: '//';
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+      color: var(--green-dim);
+      opacity: 0.4;
+    }
+    .status-box::before { left: 12px; }
+    .status-box::after { right: 12px; }
+
+    @keyframes border-glow {
+      0%, 100% { box-shadow: 0 0 10px rgba(0,255,65,0.1); }
+      50% { box-shadow: 0 0 25px rgba(0,255,65,0.3); }
+    }
+
+    .status-label {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(0,255,65,0.4);
+      margin-bottom: 6px;
+    }
+    .status-text {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(14px, 3vw, 18px);
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    /* ── BLINK CURSOR ── */
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      height: 1.1em;
+      background: var(--green);
+      margin-left: 4px;
+      vertical-align: middle;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* ── CA BOX ── */
+    .ca-section {
+      margin-top: 30px;
+    }
+    .ca-label {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(0,255,65,0.4);
+      margin-bottom: 8px;
+    }
+    .ca-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(0,255,65,0.05);
+      border: 1px solid rgba(0,255,65,0.2);
+      padding: 12px 18px;
+    }
+    .ca-box code {
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(9px, 2vw, 12px);
+      color: var(--green);
+      word-break: break-all;
+      flex: 1;
+      text-align: left;
+    }
+    .copy-btn {
+      background: none;
+      border: 1px solid var(--green);
+      color: var(--green);
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      padding: 6px 12px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .copy-btn:hover {
+      background: var(--green);
+      color: var(--black);
+      box-shadow: 0 0 14px var(--green-glow);
+    }
+    .copy-btn.copied {
+      background: var(--green);
+      color: var(--black);
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      width: 100%;
+      max-width: 500px;
+      margin: 30px auto;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: rgba(0,255,65,0.2);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(0,255,65,0.15);
+    }
+
+    /* ── LINKS ── */
+    .links {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 8px;
+    }
+    .link-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      border: 1px solid rgba(0,255,65,0.3);
+      color: var(--green);
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 10px 20px;
+      background: rgba(0,255,65,0.04);
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .link-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--green);
+      transform: translateX(-100%);
+      transition: transform 0.25s;
+      z-index: 0;
+    }
+    .link-btn:hover::before { transform: translateX(0); }
+    .link-btn:hover { color: var(--black); box-shadow: 0 0 20px var(--green-glow); }
+    .link-btn span { position: relative; z-index: 1; }
+
+    /* ── FOOTER ── */
+    .footer {
+      margin-top: 48px;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: rgba(0,255,65,0.25);
+      text-transform: uppercase;
+      padding-bottom: 20px;
+    }
+    .footer a { color: rgba(0,255,65,0.4); text-decoration: none; }
+    .footer a:hover { color: var(--green); }
+
+    /* ── CORNER DECORATION ── */
+    .corner-text {
+      position: fixed;
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: rgba(0,255,65,0.2);
+      z-index: 50;
+    }
+    .corner-text.bl { bottom: 14px; left: 86px; }
+    .corner-text.br { bottom: 14px; right: 86px; }
+  </style>
+</head>
+<body>
+
+<!-- Scanline + grid via body pseudo-elements -->
+<div class="glow-orb"></div>
+
+<!-- Corner brackets -->
+<div class="bracket bracket-tl"></div>
+<div class="bracket bracket-tr"></div>
+<div class="bracket bracket-bl"></div>
+<div class="bracket bracket-br"></div>
+
+<!-- Corner text -->
+<div class="corner-text bl">v0.0.1-alpha</div>
+<div class="corner-text br">bagslife.fun</div>
+
+<!-- Ticker bar -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <span>$BAGSLIFE</span><span class="sep">◆</span>
+    <span>BAGS IS LIFE</span><span class="sep">◆</span>
+    <span>launched by @fihleetho</span><span class="sep">◆</span>
+    <span>CA: 4DmFXyEuDup36PeiTT2cJjsoL8mmPu2obdXzupd9BAGS</span><span class="sep">◆</span>
+    <span>$BAGSLIFE</span><span class="sep">◆</span>
+    <span>BAGS IS LIFE</span><span class="sep">◆</span>
+    <span>launched by @fihleetho</span><span class="sep">◆</span>
+    <span>CA: 4DmFXyEuDup36PeiTT2cJjsoL8mmPu2obdXzupd9BAGS</span><span class="sep">◆</span>
+  </div>
+</div>
+
+<!-- Main content -->
+<div class="wrapper">
+
+  <!-- Logo -->
+  <div class="logo-wrap">
+    <div class="logo-ring"></div>
+    <img src="logo.png" alt="Bags is Life Logo" id="logo-img"/>
+  </div>
+
+  <!-- Headline -->
+  <h1 class="headline">BAGS<br><span class="ticker-sym">IS LIFE</span></h1>
+  <p class="subtitle">$BAGSLIFE &nbsp;·&nbsp; The bag is coming</p>
+
+  <!-- Status -->
+  <div class="status-box">
+    <div class="status-label">// system status //</div>
+    <div class="status-text">Site launching soon<span class="cursor"></span></div>
+  </div>
+
+  <!-- CA -->
+  <div class="ca-section">
+    <div class="ca-label">// contract address //</div>
+    <div class="ca-box">
+      <code id="ca-code">4DmFXyEuDup36PeiTT2cJjsoL8mmPu2obdXzupd9BAGS</code>
+      <button class="copy-btn" id="copy-btn" onclick="copyCA()">COPY</button>
+    </div>
+  </div>
+
+  <!-- Divider -->
+  <div class="divider">JOIN THE COMMUNITY</div>
+
+  <!-- Links -->
+  <div class="links">
+    <a class="link-btn" href="https://x.com/fihleetho" target="_blank" rel="noopener">
+      <span>𝕏 @fihleetho</span>
+    </a>
+    <a class="link-btn" href="https://x.com/i/communities/2036388845885825388" target="_blank" rel="noopener">
+      <span>𝕏 Community</span>
+    </a>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    &copy; 2025 bagslife.fun &nbsp;·&nbsp; built by the bags fam &nbsp;·&nbsp;
+    <a href="https://x.com/fihleetho" target="_blank">@fihleetho</a>
+  </div>
+
+</div>
+
+<script>
+  // Copy CA
+  function copyCA() {
+    const ca = document.getElementById('ca-code').textContent;
+    navigator.clipboard.writeText(ca).then(() => {
+      const btn = document.getElementById('copy-btn');
+      btn.textContent = 'COPIED!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'COPY';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  // Glitch effect on logo on hover
+  const logo = document.getElementById('logo-img');
+  logo.addEventListener('mouseover', () => {
+    logo.style.filter = 'drop-shadow(0 0 30px #00ff41) drop-shadow(0 0 80px rgba(0,255,65,0.6)) hue-rotate(20deg)';
+    setTimeout(() => {
+      logo.style.filter = 'drop-shadow(0 0 18px #00ff41) drop-shadow(0 0 40px rgba(0,255,65,0.4))';
+    }, 300);
+  });
+</script>
+</body>
+</html>
