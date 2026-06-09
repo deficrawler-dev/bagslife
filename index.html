@@ -1,518 +1,836 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>$BAGSLIFE — Coming Soon</title>
-  <link rel="icon" type="image/png" href="logo.png"/>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"/>
-  <style>
-    :root {
-      --green: #00ff41;
-      --green-dim: #00c832;
-      --green-glow: rgba(0,255,65,0.35);
-      --green-faint: rgba(0,255,65,0.07);
-      --black: #000000;
-      --dark: #050f05;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>$BAGSLIFE — Bags Is Life</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#000; --surface:#0a0a0a; --surface2:#111; --surface3:#1a1a1a; --surface4:#222;
+  --green:#00ff41; --green-dim:#00c832; --green-faint:rgba(0,255,65,0.07); --green-glow:rgba(0,255,65,0.25);
+  --text:#f2f2f2; --text2:#888; --text3:#555;
+  --border:rgba(0,255,65,0.12); --border2:rgba(0,255,65,0.22);
+  --red:#ff4444; --gold:#f5c842;
+  --nav-bg:rgba(0,0,0,0.92);
+  --scan-color:rgba(0,255,65,0.012);
+}
+body.light-mode {
+  --bg:#f5f5f0; --surface:#fff; --surface2:#f0f0eb; --surface3:#e5e5e0; --surface4:#d8d8d0;
+  --green:#00a832; --green-dim:#007a22; --green-faint:rgba(0,168,50,0.07); --green-glow:rgba(0,168,50,0.2);
+  --text:#0a0a0a; --text2:#555; --text3:#999;
+  --border:rgba(0,168,50,0.18); --border2:rgba(0,168,50,0.32);
+  --red:#cc2222; --gold:#c8960a;
+  --nav-bg:rgba(245,245,240,0.95);
+  --scan-color:rgba(0,168,50,0.006);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;overflow-x:hidden;transition:background .3s,color .3s;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--green);}
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,var(--scan-color) 3px,var(--scan-color) 4px);pointer-events:none;z-index:9999;}
 
-    html, body {
-      height: 100%;
-      background: var(--black);
-      color: var(--green);
-      font-family: 'Space Mono', monospace;
-      overflow-x: hidden;
-    }
+.grid-bg{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(var(--green-faint) 1px,transparent 1px),linear-gradient(90deg,var(--green-faint) 1px,transparent 1px);background-size:64px 64px;}
 
-    /* ── SCANLINE OVERLAY ── */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 3px,
-        rgba(0,255,65,0.015) 3px,
-        rgba(0,255,65,0.015) 4px
-      );
-      pointer-events: none;
-      z-index: 999;
-    }
+/* THEME TOGGLE */
+.ts-wrap{display:flex;align-items:center;gap:8px;}
+.ts-lbl{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--text3);transition:color .2s;user-select:none;}
+.ts-lbl.active{color:var(--text);}
+.ts-track{position:relative;width:48px;height:26px;border-radius:13px;background:var(--surface3);border:1.5px solid var(--border2);cursor:pointer;transition:background .3s;flex-shrink:0;padding:0;}
+.ts-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--green);transition:transform .25s cubic-bezier(.4,0,.2,1),background .25s;display:block;}
+body.light-mode .ts-thumb{transform:translateX(22px);}
 
-    /* ── GRID BG ── */
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(var(--green-faint) 1px, transparent 1px),
-        linear-gradient(90deg, var(--green-faint) 1px, transparent 1px);
-      background-size: 60px 60px;
-      pointer-events: none;
-      z-index: 0;
-    }
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;text-decoration:none;border:none;transition:all .15s;}
+.btn-fill{background:var(--green);color:#000;box-shadow:4px 4px 0 var(--green-dim);}
+.btn-fill:hover{box-shadow:2px 2px 0 var(--green-dim);transform:translate(2px,2px);}
+.btn-outline{background:transparent;color:var(--green);border:1.5px solid var(--green);box-shadow:4px 4px 0 rgba(0,255,65,0.2);}
+.btn-outline:hover{box-shadow:2px 2px 0 rgba(0,255,65,0.2);transform:translate(2px,2px);}
 
-    /* ── RADIAL GLOW CENTER ── */
-    .glow-orb {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 700px;
-      height: 700px;
-      background: radial-gradient(circle, rgba(0,255,65,0.12) 0%, transparent 70%);
-      pointer-events: none;
-      z-index: 0;
-      animation: pulse-orb 4s ease-in-out infinite;
-    }
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;height:60px;display:flex;align-items:center;padding:0 2rem;background:var(--nav-bg);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);transition:background .3s,border-color .3s;}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo img{height:34px;width:34px;object-fit:contain;mix-blend-mode:screen;}
+body.light-mode .nav-logo img{mix-blend-mode:multiply;}
+.nav-logo-text{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--green);letter-spacing:4px;}
+.nav-links{display:flex;gap:0;list-style:none;position:absolute;left:50%;transform:translateX(-50%);}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:0 14px;transition:color .2s;}
+.nav-links a:hover{color:var(--green);}
+.nav-right{display:flex;align-items:center;gap:14px;margin-left:auto;}
+.hbg{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;}
+.hbg span{display:block;width:22px;height:1.5px;background:var(--text);transition:background .2s;}
+.mob-nav{display:none;position:fixed;top:60px;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem;z-index:499;flex-direction:column;gap:1rem;}
+.mob-nav.open{display:flex;}
+.mob-nav a{color:var(--text);text-decoration:none;font-size:14px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:10px 0;border-bottom:1px solid var(--border);}
+@media(max-width:860px){.nav-links{display:none;}.hbg{display:flex;}.nav-buy-btn{display:none !important;}.nav-ts{display:none !important;}}
 
-    @keyframes pulse-orb {
-      0%, 100% { opacity: 0.6; transform: translate(-50%,-50%) scale(1); }
-      50% { opacity: 1; transform: translate(-50%,-50%) scale(1.08); }
-    }
+/* TICKER */
+.ticker-wrap{position:fixed;top:60px;left:0;right:0;z-index:400;height:32px;overflow:hidden;background:var(--green);border-bottom:1px solid var(--green-dim);}
+.ticker-inner{display:flex;align-items:center;height:100%;white-space:nowrap;animation:tick 30s linear infinite;}
+.ticker-inner span{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:#000;padding:0 28px;letter-spacing:0.1em;}
+.ticker-inner span.sep{opacity:0.35;padding:0 6px;}
+@keyframes tick{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 
-    /* ── WRAPPER ── */
-    .wrapper {
-      position: relative;
-      z-index: 10;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 20px;
-      text-align: center;
-      gap: 0;
-    }
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 1.5rem 5rem;position:relative;z-index:10;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--green);border:1px solid var(--border2);padding:6px 16px;margin-bottom:2.5rem;background:var(--green-faint);}
+.blink-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 1.2s infinite;flex-shrink:0;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+.hero-logo{width:120px;height:120px;object-fit:contain;mix-blend-mode:screen;margin-bottom:1.5rem;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 0 20px rgba(0,255,65,0.5));}
+body.light-mode .hero-logo{mix-blend-mode:multiply;filter:none;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,18vw,180px);line-height:.88;letter-spacing:6px;color:var(--text);margin-bottom:.2em;}
+.hero h1 em{color:var(--green);font-style:normal;display:block;}
+.hero-sub{font-family:'Space Mono',monospace;font-size:clamp(11px,2vw,13px);color:var(--text2);letter-spacing:0.22em;text-transform:uppercase;margin-bottom:2.5rem;}
+.ca-wrap{display:flex;align-items:center;border:1.5px solid var(--border2);max-width:580px;width:100%;margin:0 auto 2.5rem;box-shadow:4px 4px 0 var(--green-glow);background:var(--surface);}
+.ca-lbl{font-family:'Space Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:0.2em;padding:0 12px;white-space:nowrap;border-right:1.5px solid var(--border);}
+.ca-addr{font-family:'Space Mono',monospace;font-size:11px;color:var(--green);flex:1;padding:14px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ca-copy{padding:14px 18px;background:var(--green);color:#000;border:none;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:0.1em;transition:background .2s;flex-shrink:0;}
+.ca-copy:hover{background:var(--green-dim);}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
 
-    /* ── CORNER BRACKETS ── */
-    .bracket {
-      position: fixed;
-      width: 50px; height: 50px;
-      opacity: 0.4;
-      z-index: 20;
-    }
-    .bracket-tl { top: 24px; left: 24px; border-top: 2px solid var(--green); border-left: 2px solid var(--green); }
-    .bracket-tr { top: 24px; right: 24px; border-top: 2px solid var(--green); border-right: 2px solid var(--green); }
-    .bracket-bl { bottom: 24px; left: 24px; border-bottom: 2px solid var(--green); border-left: 2px solid var(--green); }
-    .bracket-br { bottom: 24px; right: 24px; border-bottom: 2px solid var(--green); border-right: 2px solid var(--green); }
+/* SECTIONS */
+.section{max-width:1160px;margin:0 auto;padding:5rem 1.5rem;position:relative;z-index:10;}
+.eyebrow{font-family:'Space Mono',monospace;font-size:11px;color:var(--green);letter-spacing:0.25em;text-transform:uppercase;margin-bottom:.5rem;}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,7vw,72px);letter-spacing:3px;line-height:1;margin-bottom:2.5rem;color:var(--text);}
+.divider{height:1px;background:var(--border);max-width:1160px;margin:0 auto;}
 
-    /* ── TOP TICKER BAR ── */
-    .ticker-wrap {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      height: 36px;
-      overflow: hidden;
-      background: rgba(0,255,65,0.07);
-      border-bottom: 1px solid rgba(0,255,65,0.2);
-      z-index: 100;
-    }
-    .ticker-inner {
-      display: flex;
-      align-items: center;
-      height: 100%;
-      white-space: nowrap;
-      animation: ticker 22s linear infinite;
-    }
-    .ticker-inner span {
-      font-family: 'Space Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.12em;
-      color: var(--green);
-      padding: 0 40px;
-    }
-    .ticker-inner span.sep { opacity: 0.4; padding: 0 10px; }
-    @keyframes ticker {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));border:1.5px solid var(--border2);box-shadow:5px 5px 0 var(--green-glow);}
+.s-card{padding:1.75rem;background:var(--surface);border-right:1.5px solid var(--border);border-bottom:1.5px solid var(--border);transition:background .2s;}
+.s-card:hover{background:var(--surface2);}
+.s-lbl{font-family:'Space Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:.6rem;}
+.s-val{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:2px;color:var(--green);line-height:1;}
+.s-sub{font-size:12px;color:var(--text2);font-family:'Space Mono',monospace;margin-top:6px;}
 
-    /* ── LOGO ── */
-    .logo-wrap {
-      margin-top: 20px;
-      position: relative;
-      width: 160px;
-      height: 160px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .logo-wrap img {
-  width: 130px;
-  height: 130px;
-  object-fit: contain;
-  mix-blend-mode: screen;
-  filter: drop-shadow(0 0 18px var(--green)) drop-shadow(0 0 40px rgba(0,255,65,0.4));
-  animation: logo-float 3s ease-in-out infinite;
-    }
-    .logo-ring {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 1px solid rgba(0,255,65,0.25);
-      animation: ring-spin 8s linear infinite;
-    }
-    .logo-ring::before {
-      content: '';
-      position: absolute;
-      top: -4px; left: 50%;
-      transform: translateX(-50%);
-      width: 8px; height: 8px;
-      background: var(--green);
-      border-radius: 50%;
-      box-shadow: 0 0 10px var(--green);
-    }
-    @keyframes logo-float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-    @keyframes ring-spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
+/* FAMILY TREE */
+.family-intro{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:3rem;align-items:start;}
+.family-text{font-size:15px;color:var(--text2);line-height:1.8;}
+.family-text strong{color:var(--green);font-weight:600;}
+.tree-wrap{border:1.5px solid var(--border2);background:var(--surface);box-shadow:5px 5px 0 var(--green-glow);overflow-x:auto;}
+.tree-head{padding:1.25rem 1.5rem;border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.tree-heading{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;color:var(--text);}
+.tree-nodes{padding:2rem 1.5rem;}
+.founder-node{display:flex;flex-direction:column;align-items:center;margin-bottom:1.5rem;}
+.founder-card{display:flex;align-items:center;gap:14px;padding:16px 22px;background:var(--bg);border:1.5px solid var(--green);box-shadow:0 0 24px rgba(0,255,65,0.15),4px 4px 0 var(--green-dim);position:relative;min-width:300px;}
+.founder-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--green);color:#000;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:0.18em;padding:3px 12px;white-space:nowrap;}
+.tree-connector-v{width:1.5px;height:32px;background:var(--green);opacity:.4;}
+.members-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.member-card{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--surface2);border:1px solid var(--border);min-width:175px;flex:1;max-width:195px;transition:border-color .2s,background .2s;}
+.member-card:hover{border-color:var(--border2);background:var(--surface3);}
+.avatar{width:42px;height:42px;border-radius:50%;background:var(--surface3);border:1.5px solid var(--green);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--green);flex-shrink:0;overflow:hidden;}
+.avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.member-info{min-width:0;}
+.member-name{font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+.verify-badge{width:14px;height:14px;background:#1d9bf0;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.verify-badge svg{width:8px;height:8px;}
+.bags-badge{font-size:12px;}
+.member-handle{font-size:11px;color:var(--text2);font-family:'Space Mono',monospace;margin-top:2px;}
 
-    /* ── HEADLINE ── */
-    .headline {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(60px, 14vw, 120px);
-      letter-spacing: 0.04em;
-      line-height: 0.95;
-      margin-top: 16px;
-      color: var(--green);
-      text-shadow:
-        0 0 20px var(--green),
-        0 0 60px rgba(0,255,65,0.4),
-        0 0 120px rgba(0,255,65,0.15);
-      animation: flicker 6s infinite;
-    }
-    .headline .ticker-sym {
-      color: var(--black);
-      -webkit-text-stroke: 2px var(--green);
-      text-shadow: none;
-    }
+/* HACKATHON */
+.hack-intro{font-size:15px;color:var(--text2);line-height:1.9;max-width:760px;margin-bottom:3rem;}
+.hack-intro strong{color:var(--green);}
+.cohort-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:var(--text);margin:2.5rem 0 1.25rem;display:flex;align-items:center;gap:14px;}
+.cohort-prize{font-family:'Space Mono',monospace;font-size:11px;color:var(--green);background:var(--green-faint);border:1px solid var(--border2);padding:4px 12px;letter-spacing:0.12em;}
+.hack-preview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;}
+.hack-card{background:var(--surface);border:1.5px solid var(--border);padding:1.5rem;position:relative;transition:border-color .2s;}
+.hack-card:hover{border-color:var(--border2);}
+.hack-card.gold-card{border-color:var(--gold);box-shadow:4px 4px 0 rgba(245,200,66,0.25);}
+.hack-card.silver-card{border-color:#aaa;box-shadow:4px 4px 0 rgba(170,170,170,0.2);}
+.hack-card.bad-card{border-color:var(--red);box-shadow:4px 4px 0 rgba(255,68,68,0.2);}
+.place-badge{position:absolute;top:-11px;right:20px;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:0.18em;padding:3px 12px;}
+.gold-badge{background:var(--gold);color:#000;}
+.silver-badge{background:#aaa;color:#000;}
+.bad-badge{background:var(--red);color:#fff;}
+.hack-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;margin-bottom:4px;color:var(--text);}
+.hack-handle{font-family:'Space Mono',monospace;font-size:11px;color:var(--text2);margin-bottom:12px;}
+.hack-handle a{color:var(--green);text-decoration:none;}
+.hack-handle a:hover{text-decoration:underline;}
+.hack-project{font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:14px;}
+.hack-prize{display:flex;align-items:baseline;gap:8px;}
+.prize-amount{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--green);letter-spacing:2px;}
+.prize-label{font-family:'Space Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:0.15em;}
 
-    @keyframes flicker {
-      0%, 95%, 100% { opacity: 1; }
-      96% { opacity: 0.85; }
-      97% { opacity: 1; }
-      98% { opacity: 0.7; }
-      99% { opacity: 1; }
-    }
+/* BAD ACTORS */
+.bad-actors-box{border:1.5px solid var(--red);background:rgba(255,68,68,0.04);padding:2rem;margin-top:2.5rem;box-shadow:4px 4px 0 rgba(255,68,68,0.15);}
+.bad-actors-header{display:flex;align-items:center;gap:12px;margin-bottom:1rem;}
+.bad-actors-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;color:var(--red);}
+.bad-tag{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:0.18em;padding:3px 10px;background:var(--red);color:#fff;}
+.bad-actors-desc{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:1.5rem;max-width:680px;}
+.bad-actors-desc strong{color:var(--red);}
+.bad-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;}
 
-    /* ── SUBTITLE ── */
-    .subtitle {
-      font-family: 'Space Mono', monospace;
-      font-size: clamp(11px, 2.5vw, 14px);
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: rgba(0,255,65,0.55);
-      margin-top: 10px;
-    }
+/* VIEW MORE BUTTON */
+.view-more-wrap{text-align:center;margin-top:2.5rem;}
 
-    /* ── STATUS BOX ── */
-    .status-box {
-      margin-top: 36px;
-      border: 1px solid rgba(0,255,65,0.3);
-      padding: 18px 36px;
-      background: rgba(0,255,65,0.04);
-      position: relative;
-      animation: border-glow 3s ease-in-out infinite;
-    }
-    .status-box::before, .status-box::after {
-      content: '//';
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      font-family: 'Space Mono', monospace;
-      font-size: 14px;
-      color: var(--green-dim);
-      opacity: 0.4;
-    }
-    .status-box::before { left: 12px; }
-    .status-box::after { right: 12px; }
+/* HACK STATS */
+.hack-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;border:1.5px solid var(--border);padding:1.5rem;background:var(--surface);box-shadow:5px 5px 0 var(--green-glow);margin-top:2.5rem;}
+.hstat{text-align:center;}
+.hstat-val{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--green);letter-spacing:2px;}
+.hstat-lbl{font-family:'Space Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:0.15em;text-transform:uppercase;margin-top:4px;}
 
-    @keyframes border-glow {
-      0%, 100% { box-shadow: 0 0 10px rgba(0,255,65,0.1); }
-      50% { box-shadow: 0 0 25px rgba(0,255,65,0.3); }
-    }
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:10000;overflow-y:auto;padding:2rem 1rem;}
+body.light-mode .modal-overlay{background:rgba(0,0,0,0.7);}
+.modal-overlay.open{display:block;}
+.modal-box{max-width:900px;margin:0 auto;background:var(--surface);border:1.5px solid var(--border2);box-shadow:0 0 40px rgba(0,255,65,0.15);}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:1.5rem;border-bottom:1.5px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:1;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:var(--text);}
+.modal-close{background:var(--green);border:none;color:#000;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;padding:8px 18px;cursor:pointer;letter-spacing:0.1em;transition:background .2s;}
+.modal-close:hover{background:var(--green-dim);}
+.modal-body{padding:1.5rem;}
+.modal-cohort{margin-bottom:2.5rem;}
+.modal-cohort-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--text);padding:1rem 0 0.75rem;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.modal-cohort-title:first-child{border-top:none;padding-top:0;}
+.modal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;}
+.modal-card{background:var(--surface2);border:1px solid var(--border);padding:1.25rem;position:relative;}
+.modal-card.gold-card{border-color:var(--gold);}
+.modal-card.silver-card{border-color:#aaa;}
+.modal-card.bad-card{border-color:var(--red);}
 
-    .status-label {
-      font-size: 10px;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: rgba(0,255,65,0.4);
-      margin-bottom: 6px;
-    }
-    .status-text {
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(14px, 3vw, 18px);
-      font-weight: 700;
-      color: var(--green);
-    }
+/* HOW TO BUY */
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));border:1.5px solid var(--border2);box-shadow:5px 5px 0 var(--green-glow);}
+.step{padding:2rem;background:var(--surface);border-right:1.5px solid var(--border);position:relative;overflow:hidden;}
+.step:last-child{border-right:none;}
+.step-n{font-family:'Bebas Neue',sans-serif;font-size:80px;color:var(--surface3);line-height:1;position:absolute;top:.5rem;right:1rem;user-select:none;}
+.step-t{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;margin-bottom:.6rem;color:var(--text);}
+.step-d{font-size:13px;color:var(--text2);line-height:1.7;}
+.step-a{display:inline-block;margin-top:1rem;color:var(--green);font-family:'Space Mono',monospace;font-size:11px;text-decoration:none;letter-spacing:0.1em;border-bottom:1px solid var(--green);padding-bottom:1px;}
 
-    /* ── BLINK CURSOR ── */
-    .cursor {
-      display: inline-block;
-      width: 10px;
-      height: 1.1em;
-      background: var(--green);
-      margin-left: 4px;
-      vertical-align: middle;
-      animation: blink 1s step-end infinite;
-    }
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
+/* TOKENOMICS */
+.tok-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));border:1.5px solid var(--border2);box-shadow:5px 5px 0 var(--green-glow);}
+.tok-cell{padding:2rem;background:var(--surface);border-right:1.5px solid var(--border);border-bottom:1.5px solid var(--border);}
+.tok-lbl{font-family:'Space Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:.5rem;}
+.tok-val{font-family:'Bebas Neue',sans-serif;font-size:42px;color:var(--green);letter-spacing:2px;}
+.tok-note{font-size:13px;color:var(--text2);margin-top:8px;line-height:1.6;}
 
-    /* ── CA BOX ── */
-    .ca-section {
-      margin-top: 30px;
-    }
-    .ca-label {
-      font-size: 10px;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: rgba(0,255,65,0.4);
-      margin-bottom: 8px;
-    }
-    .ca-box {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: rgba(0,255,65,0.05);
-      border: 1px solid rgba(0,255,65,0.2);
-      padding: 12px 18px;
-    }
-    .ca-box code {
-      font-family: 'Space Mono', monospace;
-      font-size: clamp(9px, 2vw, 12px);
-      color: var(--green);
-      word-break: break-all;
-      flex: 1;
-      text-align: left;
-    }
-    .copy-btn {
-      background: none;
-      border: 1px solid var(--green);
-      color: var(--green);
-      font-family: 'Space Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.15em;
-      padding: 6px 12px;
-      cursor: pointer;
-      text-transform: uppercase;
-      transition: all 0.2s;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .copy-btn:hover {
-      background: var(--green);
-      color: var(--black);
-      box-shadow: 0 0 14px var(--green-glow);
-    }
-    .copy-btn.copied {
-      background: var(--green);
-      color: var(--black);
-    }
+/* COMMUNITY */
+.comm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;}
+.comm-card{display:flex;align-items:center;gap:14px;padding:1.25rem;background:var(--surface);border:1.5px solid var(--border);text-decoration:none;color:var(--text);box-shadow:4px 4px 0 var(--green-glow);transition:box-shadow .12s,transform .12s;}
+.comm-card:hover{box-shadow:2px 2px 0 var(--green-glow);transform:translate(2px,2px);}
+.comm-icon{width:44px;height:44px;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.comm-icon svg{fill:#000;}
+.comm-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--text);}
+.comm-sub{font-size:11px;color:var(--text2);font-family:'Space Mono',monospace;margin-top:2px;}
 
-    /* ── DIVIDER ── */
-    .divider {
-      width: 100%;
-      max-width: 500px;
-      margin: 30px auto;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      color: rgba(0,255,65,0.2);
-      font-size: 10px;
-      letter-spacing: 0.2em;
-    }
-    .divider::before, .divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: rgba(0,255,65,0.15);
-    }
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:3rem 1.5rem;text-align:center;position:relative;z-index:10;}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:60px;color:var(--green);letter-spacing:10px;display:block;margin-bottom:.75rem;}
+.footer-sub{font-family:'Space Mono',monospace;font-size:11px;color:var(--text2);letter-spacing:0.15em;line-height:2.2;}
+.footer-links{display:flex;gap:2rem;justify-content:center;margin:1.5rem 0;flex-wrap:wrap;}
+.footer-links a{font-family:'Space Mono',monospace;font-size:11px;color:var(--text2);text-decoration:none;letter-spacing:0.12em;text-transform:uppercase;transition:color .2s;}
+.footer-links a:hover{color:var(--green);}
+.disclaimer{max-width:560px;margin:1.5rem auto 0;font-size:11px;color:var(--text3);line-height:1.8;}
 
-    /* ── LINKS ── */
-    .links {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 8px;
-    }
-    .link-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      text-decoration: none;
-      border: 1px solid rgba(0,255,65,0.3);
-      color: var(--green);
-      font-family: 'Space Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      padding: 10px 20px;
-      background: rgba(0,255,65,0.04);
-      transition: all 0.25s;
-      position: relative;
-      overflow: hidden;
-    }
-    .link-btn::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--green);
-      transform: translateX(-100%);
-      transition: transform 0.25s;
-      z-index: 0;
-    }
-    .link-btn:hover::before { transform: translateX(0); }
-    .link-btn:hover { color: var(--black); box-shadow: 0 0 20px var(--green-glow); }
-    .link-btn span { position: relative; z-index: 1; }
-
-    /* ── FOOTER ── */
-    .footer {
-      margin-top: 48px;
-      font-size: 10px;
-      letter-spacing: 0.2em;
-      color: rgba(0,255,65,0.25);
-      text-transform: uppercase;
-      padding-bottom: 20px;
-    }
-    .footer a { color: rgba(0,255,65,0.4); text-decoration: none; }
-    .footer a:hover { color: var(--green); }
-
-    /* ── CORNER DECORATION ── */
-    .corner-text {
-      position: fixed;
-      font-family: 'Space Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.2em;
-      color: rgba(0,255,65,0.2);
-      z-index: 50;
-    }
-    .corner-text.bl { bottom: 14px; left: 86px; }
-    .corner-text.br { bottom: 14px; right: 86px; }
-  </style>
+@media(max-width:700px){
+  .family-intro{grid-template-columns:1fr;}
+  .members-row{flex-direction:column;align-items:stretch;}
+  .member-card{max-width:100%;}
+  .hack-stats{grid-template-columns:1fr 1fr;}
+  .tok-grid{grid-template-columns:1fr;}
+  .founder-card{min-width:unset;width:100%;}
+}
+</style>
 </head>
 <body>
+<div class="grid-bg"></div>
 
-<!-- Scanline + grid via body pseudo-elements -->
-<div class="glow-orb"></div>
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <img src="logo.png" alt="Bags is Life">
+    <span class="nav-logo-text">$BAGSLIFE</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="#hackathon">Hackathon</a></li>
+    <li><a href="#tokenomics">Tokenomics</a></li>
+    <li><a href="#buy">How to Buy</a></li>
+    <li><a href="#community">Community</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="ts-wrap nav-ts">
+      <span class="ts-lbl active" id="lbl-dark">DARK</span>
+      <button class="ts-track" onclick="toggleTheme()" aria-label="Toggle theme"><span class="ts-thumb"></span></button>
+      <span class="ts-lbl" id="lbl-light">LIGHT</span>
+    </div>
+    <a href="https://x.com/i/communities/2036388845885825388" target="_blank" class="btn btn-fill nav-buy-btn" style="font-size:11px;padding:9px 20px;">JOIN COMMUNITY</a>
+    <button class="hbg" id="hbg" onclick="toggleMob()" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
 
-<!-- Corner brackets -->
-<div class="bracket bracket-tl"></div>
-<div class="bracket bracket-tr"></div>
-<div class="bracket bracket-bl"></div>
-<div class="bracket bracket-br"></div>
+<!-- MOBILE NAV -->
+<div class="mob-nav" id="mobNav">
+  <a href="#about" onclick="closeMob()">About</a>
+  <a href="#team" onclick="closeMob()">Team</a>
+  <a href="#hackathon" onclick="closeMob()">Hackathon</a>
+  <a href="#tokenomics" onclick="closeMob()">Tokenomics</a>
+  <a href="#buy" onclick="closeMob()">How to Buy</a>
+  <a href="#community" onclick="closeMob()">Community</a>
+  <div style="display:flex;align-items:center;gap:10px;padding:10px 0;">
+    <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text3);">THEME:</span>
+    <button class="ts-track" onclick="toggleTheme()" aria-label="Toggle theme" style="margin:0;"><span class="ts-thumb"></span></button>
+    <span id="mob-theme-cur" style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text2);">DARK</span>
+  </div>
+  <a href="https://x.com/i/communities/2036388845885825388" target="_blank" style="color:#000;background:var(--green);border:none;text-align:center;padding:12px;" onclick="closeMob()">JOIN COMMUNITY</a>
+</div>
 
-<!-- Corner text -->
-<div class="corner-text bl">v0.0.1-alpha</div>
-<div class="corner-text br">bagslife.fun</div>
-
-<!-- Ticker bar -->
+<!-- TICKER -->
 <div class="ticker-wrap">
   <div class="ticker-inner">
     <span>$BAGSLIFE</span><span class="sep">◆</span>
     <span>BAGS IS LIFE</span><span class="sep">◆</span>
-    <span>launched by @fihleetho</span><span class="sep">◆</span>
     <span>CA: 4DmFXyEuDup36PeiTT2cJjsoL8mmPu2obdXzupd9BAGS</span><span class="sep">◆</span>
+    <span>LAUNCHED BY @fihleetho</span><span class="sep">◆</span>
+    <span>BAGS APP HACKATHON · 3 COHORTS · 21 DEVS FUNDED</span><span class="sep">◆</span>
+    <span>BUILT ON SOLANA</span><span class="sep">◆</span>
     <span>$BAGSLIFE</span><span class="sep">◆</span>
     <span>BAGS IS LIFE</span><span class="sep">◆</span>
-    <span>launched by @fihleetho</span><span class="sep">◆</span>
     <span>CA: 4DmFXyEuDup36PeiTT2cJjsoL8mmPu2obdXzupd9BAGS</span><span class="sep">◆</span>
+    <span>LAUNCHED BY @fihleetho</span><span class="sep">◆</span>
+    <span>BAGS APP HACKATHON · 3 COHORTS · 21 DEVS FUNDED</span><span class="sep">◆</span>
+    <span>BUILT ON SOLANA</span><span class="sep">◆</span>
   </div>
 </div>
 
-<!-- Main content -->
-<div class="wrapper">
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow"><div class="blink-dot"></div>Live on Solana · Community Token</div>
+  <img src="logo.png" alt="Bags is Life" class="hero-logo">
+  <h1>BAGS<em>IS LIFE</em></h1>
+  <p class="hero-sub">$BAGSLIFE &nbsp;·&nbsp; The community that carries the bag</p>
+  <div class="ca-wrap">
+    <span class="ca-lbl">CA</span>
+    <span class="ca-addr">4DmFXyEuDup36PeiTT2cJjsoL8mmPu2obdXzupd9BAGS</span>
+    <button class="ca-copy" onclick="copyCA()">COPY</button>
+  </div>
+  <div class="hero-btns">
+    <a href="#buy" class="btn btn-fill">BUY $BAGSLIFE</a>
+    <a href="#community" class="btn btn-outline">JOIN COMMUNITY</a>
+  </div>
+</section>
 
-  <!-- Logo -->
-  <div class="logo-wrap">
-    <div class="logo-ring"></div>
-    <canvas id="logo-canvas" width="130" height="130"></canvas>
+<!-- ABOUT -->
+<div class="divider"></div>
+<section class="section" id="about">
+  <div class="eyebrow">Who we are</div>
+  <div class="sec-title">THE BAGS MOVEMENT</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;" class="about-grid">
+    <div>
+      <p style="font-size:15px;color:var(--text2);line-height:1.9;margin-bottom:1.25rem;">
+        <strong style="color:var(--green);">Bags Is Life</strong> is more than a token — it's a community built around supporting builders, rewarding loyalty, and carrying the bag together.
+      </p>
+      <p style="font-size:15px;color:var(--text2);line-height:1.9;margin-bottom:1.25rem;">
+        Founded by <strong style="color:var(--green);">@fihleetho</strong> and powered by the Bags App launchpad, $BAGSLIFE has become a home for developers, traders, and believers in the Solana ecosystem who show up and build.
+      </p>
+      <p style="font-size:15px;color:var(--text2);line-height:1.9;">
+        From funding developers across three hackathon cohorts to growing a tight-knit X community — Finn and the entire Bags team have proven that you can run a major launchpad and still stay deeply connected to your community. Every holder is part of the family tree.
+      </p>
+    </div>
+    <div class="stats-grid" style="margin:0;">
+      <div class="s-card"><div class="s-lbl">Token</div><div class="s-val" style="font-size:26px;">$BAGSLIFE</div><div class="s-sub">Ticker symbol</div></div>
+      <div class="s-card"><div class="s-lbl">Chain</div><div class="s-val" style="font-size:28px;">SOL</div><div class="s-sub">Solana network</div></div>
+      <div class="s-card"><div class="s-lbl">Founder</div><div class="s-val" style="font-size:20px;">@fihleetho</div><div class="s-sub">On X</div></div>
+      <div class="s-card"><div class="s-lbl">Hackathon Cohorts</div><div class="s-val">3</div><div class="s-sub">Devs funded across all</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<div class="divider"></div>
+<section class="section" id="team">
+  <div class="eyebrow">The family</div>
+  <div class="sec-title">BAGS FAMILY TREE</div>
+  <div class="family-intro">
+    <p class="family-text">
+      The Bags team is a rare breed — a group of founders and community members who run one of Solana's most active launchpads while staying <strong>genuinely close to the people who support them</strong>. No walls. No distance. Just family.
+    </p>
+    <p class="family-text">
+      Every member carries the <strong>blue verification badge</strong> and the <strong>💰 bags badge</strong> — symbols of trust, contribution, and loyalty to the ecosystem they helped build.
+    </p>
   </div>
 
-  <!-- Headline -->
-  <h1 class="headline">BAGS<br><span class="ticker-sym">IS LIFE</span></h1>
-  <p class="subtitle">$BAGSLIFE &nbsp;·&nbsp; The bag is coming</p>
+  <div class="tree-wrap">
+    <div class="tree-head">
+      <div class="tree-heading">BAGS FAMILY</div>
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:0.15em;">7 MEMBERS · ROOTED IN COMMUNITY</div>
+    </div>
+    <div class="tree-nodes">
+      <!-- Founder -->
+      <div class="founder-node">
+        <div class="founder-card">
+          <span class="founder-badge">FOUNDER · LAUNCHPAD OWNER · HACKATHON ORGANIZER</span>
+          <div class="avatar" style="width:52px;height:52px;border-width:2px;box-shadow:0 0 14px rgba(0,255,65,0.3);">
+            <img src="finnbags.jpg" alt="Finn" onerror="this.style.display='none';this.parentElement.innerText='F'">
+          </div>
+          <div>
+            <div class="member-name" style="font-size:16px;">
+              FINN
+              <div class="verify-badge"><svg viewBox="0 0 24 24" fill="white"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+              <span class="bags-badge">💰</span>
+            </div>
+            <div class="member-handle" style="font-size:12px;">@finnbags</div>
+            <div style="font-size:11px;color:var(--text3);font-family:'Space Mono',monospace;margin-top:6px;letter-spacing:0.08em;">BAGS APP · BAGS LAUNCHPAD</div>
+          </div>
+        </div>
+        <div class="tree-connector-v"></div>
+        <div style="height:1.5px;background:var(--green);opacity:.4;width:min(700px,85%);"></div>
+      </div>
 
-  <!-- Status -->
-  <div class="status-box">
-    <div class="status-label">// system status //</div>
-    <div class="status-text">Site launching soon<span class="cursor"></span></div>
+      <!-- Members -->
+      <div class="members-row">
+        <div class="member-card">
+          <div class="avatar"><img src="sambags.jpg" alt="Sam" onerror="this.style.display='none';this.parentElement.innerText='S'"></div>
+          <div class="member-info">
+            <div class="member-name">Sam <div class="verify-badge"><svg viewBox="0 0 24 24" fill="white"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><span class="bags-badge">💰</span></div>
+            <div class="member-handle">@Sambags12</div>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="avatar"><img src="ramyobags.jpg" alt="Ramo" onerror="this.style.display='none';this.parentElement.innerText='R'"></div>
+          <div class="member-info">
+            <div class="member-name">RAMO <div class="verify-badge"><svg viewBox="0 0 24 24" fill="white"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><span class="bags-badge">💰</span></div>
+            <div class="member-handle">@ramyobags</div>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="avatar"><img src="carlobags.jpg" alt="Carlo" onerror="this.style.display='none';this.parentElement.innerText='C'"></div>
+          <div class="member-info">
+            <div class="member-name">CARLO <div class="verify-badge"><svg viewBox="0 0 24 24" fill="white"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><span class="bags-badge">💰</span></div>
+            <div class="member-handle">@carlobags</div>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="avatar"><img src="stuubags.jpg" alt="Stuu" onerror="this.style.display='none';this.parentElement.innerText='St'"></div>
+          <div class="member-info">
+            <div class="member-name">Stuu <div class="verify-badge"><svg viewBox="0 0 24 24" fill="white"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><span class="bags-badge">💰</span></div>
+            <div class="member-handle">@StuuBags</div>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="avatar"><img src="sincarabags.png" alt="sincara" onerror="this.style.display='none';this.parentElement.innerText='Si'"></div>
+          <div class="member-info">
+            <div class="member-name">sincara <div class="verify-badge"><svg viewBox="0 0 24 24" fill="white"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><span class="bags-badge">💰</span></div>
+            <div class="member-handle">@sincara_bags</div>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="avatar"><img src="alaadotsolbags.jpg" alt="alaa" onerror="this.style.display='none';this.parentElement.innerText='A'"></div>
+          <div class="member-info">
+            <div class="member-name">alaa <div class="verify-badge"><svg viewBox="0 0 24 24" fill="white"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><span class="bags-badge">💰</span></div>
+            <div class="member-handle">@alaadotsol</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+</section>
 
-  <!-- CA -->
-  <div class="ca-section">
-    <div class="ca-label">// contract address //</div>
-    <div class="ca-box">
-      <code id="ca-code">4DmFXyEuDup36PeiTT2cJjsoL8mmPu2obdXzupd9BAGS</code>
-      <button class="copy-btn" id="copy-btn" onclick="copyCA()">COPY</button>
+<!-- HACKATHON -->
+<div class="divider"></div>
+<section class="section" id="hackathon">
+  <div class="eyebrow">Builders first</div>
+  <div class="sec-title">BAGS APP HACKATHON</div>
+  <p class="hack-intro">
+    The <strong>Bags App Hackathon</strong> is one of the most impactful builder initiatives in the Solana ecosystem — organized by Finn and the Bags team to fund real projects with real prizes. Across <strong>three cohorts</strong>, the program has backed 21 builders, shipped real products, and put meaningful capital in the hands of developers who actually build. This is how the Bags community leads by example.
+  </p>
+
+  <!-- Cohort 1 preview -->
+  <div class="cohort-title">Cohort 1 <span class="cohort-prize">$50,000 + Mac Mini</span></div>
+  <div class="hack-preview-grid">
+    <div class="hack-card gold-card">
+      <span class="place-badge gold-badge">🥇 WINNER #1 · RECOVERED</span>
+      <div class="hack-name">GSD Foundation</div>
+      <div class="hack-handle"><a href="https://x.com/gsd_foundation" target="_blank">@gsd_foundation</a></div>
+      <div class="hack-project">GSD won the first cohort — then went dark, deleted all socials, and abandoned the community. Finn stepped up, onboarded new developers, and rebuilt the project from scratch. Nothing built on Bags ever dies.</div>
+      <div class="hack-prize"><div class="prize-amount">$50K</div><div class="prize-label">+ MAC MINI · COHORT 1</div></div>
+    </div>
+    <div class="hack-card">
+      <span class="place-badge silver-badge">WINNER #2</span>
+      <div class="hack-name">Pentagon Pizza Watch</div>
+      <div class="hack-handle"><a href="https://x.com/pizzintwatch" target="_blank">@pizzintwatch</a></div>
+      <div class="hack-project">Pentagon Pizza Watch is a next-generation media platform and data source for prediction markets — helping traders and researchers spot geopolitical risk faster than anyone else.</div>
+      <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 1</div></div>
     </div>
   </div>
 
-  <!-- Divider -->
-  <div class="divider">JOIN THE COMMUNITY</div>
-
-  <!-- Links -->
-  <div class="links">
-    <a class="link-btn" href="https://x.com/fihleetho" target="_blank" rel="noopener">
-      <span>𝕏 @fihleetho</span>
-    </a>
-    <a class="link-btn" href="https://x.com/i/communities/2036388845885825388" target="_blank" rel="noopener">
-      <span>𝕏 Community</span>
-    </a>
+  <!-- Bad Actors Box -->
+  <div class="bad-actors-box">
+    <div class="bad-actors-header">
+      <div class="bad-actors-title">⚠ BAD ACTORS</div>
+      <span class="bad-tag">ABANDONED COMMUNITY</span>
+    </div>
+    <p class="bad-actors-desc">
+      Two hackathon winners chose to rug their communities after receiving funding. The Bags team has always been transparent about this — <strong>the ecosystem remembers, and the community holds them accountable.</strong> These projects are listed here as a record of what not to do.
+    </p>
+    <div class="bad-grid">
+      <div class="hack-card bad-card" style="margin:0;">
+        <span class="place-badge bad-badge">⚠ COHORT 1 · ABANDONED</span>
+        <div class="hack-name">GSD Foundation</div>
+        <div class="hack-handle"><a href="https://x.com/gsd_foundation" target="_blank">@gsd_foundation</a></div>
+        <div class="hack-project">Won Cohort 1 with a $50,000 prize, then deleted all socials and vanished — abandoning every community member who supported them. Finn personally onboarded new devs to carry the project forward.</div>
+        <div class="hack-prize"><div class="prize-amount" style="color:var(--red);">RUGGED</div><div class="prize-label">$50K RECEIVED</div></div>
+      </div>
+      <div class="hack-card bad-card" style="margin:0;">
+        <span class="place-badge bad-badge">⚠ COHORT 2 · ABANDONED</span>
+        <div class="hack-name">AgentKeys</div>
+        <div class="hack-handle"><a href="https://x.com/AgentKeysApp" target="_blank">@AgentKeysApp</a></div>
+        <div class="hack-project">Won Cohort 2, then abandoned the $oshi token tied to the project and launched a new token on a competing launchpad — turning their back on the community that championed them before they ever won.</div>
+        <div class="hack-prize"><div class="prize-amount" style="color:var(--red);">RUGGED</div><div class="prize-label">$25K RECEIVED</div></div>
+      </div>
+    </div>
   </div>
 
-  <!-- Footer -->
-  <div class="footer">
-    &copy; 2025 bagslife.fun &nbsp;·&nbsp; built by the bags fam &nbsp;·&nbsp;
-    <a href="https://x.com/fihleetho" target="_blank">@fihleetho</a>
+  <!-- View All Button -->
+  <div class="view-more-wrap">
+    <button class="btn btn-outline" onclick="openModal()" style="margin-top:0;">VIEW ALL 21 WINNERS ↗</button>
   </div>
 
+  <!-- Hackathon Stats -->
+  <div class="hack-stats">
+    <div class="hstat"><div class="hstat-val">3</div><div class="hstat-lbl">Cohorts</div></div>
+    <div class="hstat"><div class="hstat-val">21</div><div class="hstat-lbl">Devs Funded</div></div>
+    <div class="hstat"><div class="hstat-val">$85K+</div><div class="hstat-lbl">Total Prizes</div></div>
+    <div class="hstat"><div class="hstat-val">✅</div><div class="hstat-lbl">All Paid Out</div></div>
+  </div>
+</section>
+
+<!-- TOKENOMICS -->
+<div class="divider"></div>
+<section class="section" id="tokenomics">
+  <div class="eyebrow">Token distribution</div>
+  <div class="sec-title">TOKENOMICS</div>
+  <div class="tok-grid">
+    <div class="tok-cell"><div class="tok-lbl">Token Name</div><div class="tok-val" style="font-size:30px;">BAGS IS LIFE</div><p class="tok-note">The community token of the Bags App ecosystem on Solana.</p></div>
+    <div class="tok-cell"><div class="tok-lbl">Ticker</div><div class="tok-val">$BAGSLIFE</div><p class="tok-note">Trade, hold, and represent the bag.</p></div>
+    <div class="tok-cell"><div class="tok-lbl">Network</div><div class="tok-val">SOLANA</div><p class="tok-note">Fast, low-cost, and built for the community.</p></div>
+    <div class="tok-cell"><div class="tok-lbl">Contract Address</div><div style="font-family:'Space Mono',monospace;font-size:12px;color:var(--green);line-height:1.6;word-break:break-all;margin-top:6px;">4DmFXyEuDup36PeiTT2cJjsoL8mmPu2obdXzupd9BAGS</div><p class="tok-note" style="margin-top:8px;">Always verify the CA before buying.</p></div>
+  </div>
+</section>
+
+<!-- HOW TO BUY -->
+<div class="divider"></div>
+<section class="section" id="buy">
+  <div class="eyebrow">Get started</div>
+  <div class="sec-title">HOW TO BUY</div>
+  <div class="steps-grid">
+    <div class="step"><div class="step-n">01</div><div class="step-t">GET A WALLET</div><p class="step-d">Download Phantom or Solflare. Set up your account and back up your seed phrase securely. Never share it with anyone.</p><a href="https://phantom.app" target="_blank" class="step-a">Get Phantom →</a></div>
+    <div class="step"><div class="step-n">02</div><div class="step-t">BUY SOL</div><p class="step-d">Purchase SOL on any major exchange — Coinbase, Binance, or Kraken. Transfer it to your Phantom wallet address.</p><a href="https://coinbase.com" target="_blank" class="step-a">Buy on Coinbase →</a></div>
+    <div class="step"><div class="step-n">03</div><div class="step-t">SWAP FOR $BAGS</div><p class="step-d">Use Jupiter or Raydium to swap SOL for $BAGSLIFE. Paste the CA, set slippage to 1–2%, and confirm your swap.</p><a href="https://jup.ag" target="_blank" class="step-a">Swap on Jupiter →</a></div>
+    <div class="step"><div class="step-n">04</div><div class="step-t">JOIN THE FAM</div><p class="step-d">You're now part of the Bags family. Join our X community, connect with the team, and help carry the bag.</p><a href="https://x.com/i/communities/2036388845885825388" target="_blank" class="step-a">Join Community →</a></div>
+  </div>
+</section>
+
+<!-- COMMUNITY -->
+<div class="divider"></div>
+<section class="section" id="community">
+  <div class="eyebrow">Stay connected</div>
+  <div class="sec-title">COMMUNITY</div>
+  <div class="comm-grid">
+    <a href="https://x.com/fihleetho" target="_blank" class="comm-card"><div class="comm-icon"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.736l7.74-8.855L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div><div><div class="comm-name">@fihleetho</div><div class="comm-sub">Founder on X</div></div></a>
+    <a href="https://x.com/i/communities/2036388845885825388" target="_blank" class="comm-card"><div class="comm-icon"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.736l7.74-8.855L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div><div><div class="comm-name">X COMMUNITY</div><div class="comm-sub">Official Bags community</div></div></a>
+    <a href="https://dexscreener.com/solana/4DmFXyEuDup36PeiTT2cJjsoL8mmPu2obdXzupd9BAGS" target="_blank" class="comm-card"><div class="comm-icon"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M3 3v18h18M9 17V9m4 8V5m4 12v-4"/></svg></div><div><div class="comm-name">DEXSCREENER</div><div class="comm-sub">Live chart &amp; data</div></div></a>
+    <a href="https://solscan.io/token/4DmFXyEuDup36PeiTT2cJjsoL8mmPu2obdXzupd9BAGS" target="_blank" class="comm-card"><div class="comm-icon"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div><div><div class="comm-name">SOLSCAN</div><div class="comm-sub">Token explorer</div></div></a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <img src="logo.png" alt="Bags is Life" style="height:70px;width:auto;object-fit:contain;mix-blend-mode:screen;display:block;margin:0 auto 1rem;filter:drop-shadow(0 0 20px rgba(0,255,65,0.4));">
+  <span class="footer-logo">$BAGSLIFE</span>
+  <p class="footer-sub">BAGS IS LIFE · BUILT ON SOLANA<br>LAUNCHED BY @fihleetho · BAGS APP ECOSYSTEM</p>
+  <div class="footer-links">
+    <a href="#about">About</a><a href="#team">Team</a><a href="#hackathon">Hackathon</a>
+    <a href="#tokenomics">Tokenomics</a><a href="#buy">How to Buy</a>
+    <a href="https://x.com/fihleetho" target="_blank">X / Twitter</a>
+  </div>
+  <p class="disclaimer">Not financial advice. Crypto investments are highly speculative and you may lose your entire investment. Only invest what you can afford to lose. Always do your own research.</p>
+</footer>
+
+<!-- MODAL: ALL WINNERS -->
+<div class="modal-overlay" id="hackModal" onclick="handleOverlayClick(event)">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title">ALL HACKATHON WINNERS</div>
+      <button class="modal-close" onclick="closeModal()">✕ CLOSE</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- COHORT 1 -->
+      <div class="modal-cohort">
+        <div class="modal-cohort-title">Cohort 1 <span class="cohort-prize">$50,000 + Mac Mini</span></div>
+        <div class="modal-grid">
+          <div class="modal-card gold-card">
+            <span class="place-badge gold-badge" style="top:-9px;">🥇 WINNER #1 · RECOVERED</span>
+            <div class="hack-name">GSD Foundation</div>
+            <div class="hack-handle"><a href="https://x.com/gsd_foundation" target="_blank">@gsd_foundation</a></div>
+            <div class="hack-project">Won Cohort 1, then deleted all socials and abandoned the community. Finn stepped up and onboarded new developers to carry the project forward. Nothing built on Bags ever dies.</div>
+            <div class="hack-prize"><div class="prize-amount">$50K</div><div class="prize-label">+ MAC MINI</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge silver-badge" style="top:-9px;">WINNER #2</span>
+            <div class="hack-name">Pentagon Pizza Watch</div>
+            <div class="hack-handle"><a href="https://x.com/pizzintwatch" target="_blank">@pizzintwatch</a></div>
+            <div class="hack-project">A next-generation media platform and data source for prediction markets — helping traders and researchers spot geopolitical risk faster.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 1</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge" style="top:-9px;background:var(--surface4);color:var(--text);">WINNER #3</span>
+            <div class="hack-name">Primis Protocol</div>
+            <div class="hack-handle"><a href="https://x.com/primisprotocol" target="_blank">@primisprotocol</a></div>
+            <div class="hack-project">Primis has built the infrastructure and markets for compute futures — the asset class BlackRock identified as the next major frontier. They're making it tradeable on-chain.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 1</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge" style="top:-9px;background:var(--surface4);color:var(--text);">WINNER #4</span>
+            <div class="hack-name">Fitted</div>
+            <div class="hack-handle"><a href="https://x.com/fittedcloset" target="_blank">@fittedcloset</a></div>
+            <div class="hack-project">A fashion super app with a virtual closet — upload clothing items, generate outfits, and monetize your wardrobe all in one place.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 1</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge" style="top:-9px;background:var(--surface4);color:var(--text);">WINNER #5</span>
+            <div class="hack-name">Godmode</div>
+            <div class="hack-handle"><a href="https://x.com/godmodedotfun" target="_blank">@godmodedotfun</a></div>
+            <div class="hack-project">A blockchain intelligence explorer with insights traders actually care about — bundle detection, wallet coordination analysis, and sophisticated wallet tracking unavailable anywhere else.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 1</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COHORT 2 -->
+      <div class="modal-cohort">
+        <div class="modal-cohort-title">Cohort 2 <span class="cohort-prize">$25,000 + Mac Mini</span></div>
+        <div class="modal-grid">
+          <div class="modal-card bad-card">
+            <span class="place-badge bad-badge" style="top:-9px;">⚠ WINNER #1 · ABANDONED</span>
+            <div class="hack-name">AgentKeys</div>
+            <div class="hack-handle"><a href="https://x.com/AgentKeysApp" target="_blank">@AgentKeysApp</a></div>
+            <div class="hack-project">Won Cohort 2, then abandoned the $oshi token tied to the project and relaunched on a competing platform — leaving behind every community member who supported them.</div>
+            <div class="hack-prize"><div class="prize-amount" style="color:var(--red);">RUGGED</div><div class="prize-label">$25K RECEIVED</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge silver-badge" style="top:-9px;">WINNER #2</span>
+            <div class="hack-name">ZeroLeaks</div>
+            <div class="hack-handle"><a href="https://x.com/ZeroLeaks" target="_blank">@ZeroLeaks</a></div>
+            <div class="hack-project">Enterprise-grade security infrastructure for AI systems — protecting against prompt leaks, jailbreaks, and injection attacks before they ever reach production.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 2</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge" style="top:-9px;background:var(--surface4);color:var(--text);">WINNER #3</span>
+            <div class="hack-name">Nightwatch</div>
+            <div class="hack-handle"><a href="https://x.com/nightwatchtrade" target="_blank">@nightwatchtrade</a></div>
+            <div class="hack-project">Autonomous AI trading infrastructure across crypto, stocks, oil, and meme markets. Deploy custom AI trading agents powered by proprietary data and real-time market intelligence.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 2</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge" style="top:-9px;background:var(--surface4);color:var(--text);">WINNER #4</span>
+            <div class="hack-name">AgentLayer</div>
+            <div class="hack-handle"><a href="https://x.com/agentlayer_ai" target="_blank">@agentlayer_ai</a></div>
+            <div class="hack-project">Financial infrastructure for autonomous AI agents — real-time portfolio data, DeFi yields, on-chain analytics, and multi-chain execution, all without agents ever taking custody of user funds.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 2</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge" style="top:-9px;background:var(--surface4);color:var(--text);">WINNER #5</span>
+            <div class="hack-name">Seedless Wallet</div>
+            <div class="hack-handle"><a href="https://x.com/seedless_wallet" target="_blank">@seedless_wallet</a></div>
+            <div class="hack-project">Privacy-first wallet infrastructure for Solana — replacing seed phrases and gas fees with passkey authentication and biometric identity. Fully non-custodial, zero onboarding friction.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 2</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COHORT 3 -->
+      <div class="modal-cohort">
+        <div class="modal-cohort-title">Cohort 3 <span class="cohort-prize">$10,000 + Mac Mini</span></div>
+        <div class="modal-grid">
+          <div class="modal-card gold-card">
+            <span class="place-badge gold-badge" style="top:-9px;">🥇 WINNER #1</span>
+            <div class="hack-name">Orbis API</div>
+            <div class="hack-handle"><a href="https://x.com/OrbisAPI" target="_blank">@OrbisAPI</a></div>
+            <div class="hack-project">An agent-native API marketplace — AI agents can autonomously discover, pay for, and call 23,000+ APIs via x402 micropayments on Solana and Base. One MCP config, no API keys needed.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 3</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge" style="top:-9px;background:var(--surface4);color:var(--text);">WINNER #2</span>
+            <div class="hack-name">p0 systems</div>
+            <div class="hack-handle"><a href="https://x.com/P0Systems" target="_blank">@P0Systems</a></div>
+            <div class="hack-project">An AI-powered operating system for creators — generate, launch, and automate token deployments entirely on-chain.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 3</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge" style="top:-9px;background:var(--surface4);color:var(--text);">WINNER #3</span>
+            <div class="hack-name">Leon AI</div>
+            <div class="hack-handle"><a href="https://x.com/grenlouis" target="_blank">@grenlouis</a></div>
+            <div class="hack-project">An open-source, self-hosted personal assistant combining voice interaction, modular AI skills, and agentic task execution — all running locally with full user control.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 3</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge" style="top:-9px;background:var(--surface4);color:var(--text);">WINNER #4</span>
+            <div class="hack-name">Polyblock</div>
+            <div class="hack-handle"><a href="https://x.com/PolyblockTrade" target="_blank">@PolyblockTrade</a></div>
+            <div class="hack-project">A professional trading terminal for Polymarket — real-time execution, AI-powered automation, and strategy backtesting for crypto prediction markets.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 3</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge" style="top:-9px;background:var(--surface4);color:var(--text);">WINNER #5</span>
+            <div class="hack-name">Gable Guardians</div>
+            <div class="hack-handle"><a href="https://x.com/Gableguardians" target="_blank">@Gableguardians</a></div>
+            <div class="hack-project">A pixel-art MMORPG built on Solana — exploration, trading, PvP battles, and decentralized progression in a fully on-chain fantasy world.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 3</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge" style="top:-9px;background:var(--surface4);color:var(--text);">WINNER #6</span>
+            <div class="hack-name">Degen Tools</div>
+            <div class="hack-handle"><a href="https://x.com/degentoolshq" target="_blank">@degentoolshq</a></div>
+            <div class="hack-project">An AI-powered launch toolkit for internet capital markets — helping creators launch meme coins, generate content, and deploy branded websites in minutes.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 3</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge" style="top:-9px;background:var(--surface4);color:var(--text);">WINNER #7</span>
+            <div class="hack-name">Phettagotchi</div>
+            <div class="hack-handle"><a href="https://x.com/em0tionull" target="_blank">@em0tionull</a></div>
+            <div class="hack-project">A browser-based RPG on Solana where players raise pets, battle trainers, explore biomes, and build customizable dens while earning on-chain rewards.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 3</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge" style="top:-9px;background:var(--surface4);color:var(--text);">WINNER #8</span>
+            <div class="hack-name">BagsBrain</div>
+            <div class="hack-handle"><a href="https://x.com/BagsBrainApp" target="_blank">@BagsBrainApp</a></div>
+            <div class="hack-project">An AI-powered operating system for token creators on Bags — real-time intelligence, holder analytics, fee monitoring, AI reports, and automated strategy insights.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 3</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge" style="top:-9px;background:var(--surface4);color:var(--text);">WINNER #9</span>
+            <div class="hack-name">Rando</div>
+            <div class="hack-handle"><a href="https://x.com/Rando_rewards" target="_blank">@Rando_rewards</a></div>
+            <div class="hack-project">A randomized fee-sharing protocol on Bags that gives smaller holders and social participants an equal shot at earning rewards from token activity.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 3</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge" style="top:-9px;background:var(--surface4);color:var(--text);">WINNER #10</span>
+            <div class="hack-name">Trenchy</div>
+            <div class="hack-handle"><a href="https://x.com/trenchydotfun" target="_blank">@trenchydotfun</a></div>
+            <div class="hack-project">An all-in-one Solana platform for on-chain traders — token launch tools, market analytics, charting, and a social network built for the trenches.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 3</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge" style="top:-9px;background:var(--surface4);color:var(--text);">WINNER #11</span>
+            <div class="hack-name">JackBuilds</div>
+            <div class="hack-handle"><a href="https://x.com/jxckvibe" target="_blank">@jxckvibe</a></div>
+            <div class="hack-project">A young solo builder shipping practical, everyday software tools across finance, productivity, food, learning, and Solana. Proof that one person with focus can build real things.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 3</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge" style="top:-9px;background:var(--surface4);color:var(--text);">WINNER #12</span>
+            <div class="hack-name">Hive</div>
+            <div class="hack-handle"><a href="https://x.com/uphivexyz" target="_blank">@uphivexyz</a></div>
+            <div class="hack-project">An Upwork-style marketplace for AI agents on Bags — connecting autonomous agents with tasks, jobs, and workflows across the ecosystem.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 3</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge" style="top:-9px;background:var(--surface4);color:var(--text);">WINNER #13</span>
+            <div class="hack-name">LuckyFee AI</div>
+            <div class="hack-handle"><a href="https://x.com/LuckyFeeAI" target="_blank">@LuckyFeeAI</a></div>
+            <div class="hack-project">A decentralized fee-sharing reward pool built on Bags fee infrastructure — making every transaction an opportunity to win.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 3</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge" style="top:-9px;background:var(--surface4);color:var(--text);">WINNER #14</span>
+            <div class="hack-name">Purses</div>
+            <div class="hack-handle"><a href="https://x.com/pursescc_" target="_blank">@pursescc_</a></div>
+            <div class="hack-project">A fashion house for crypto — curated on-chain identity, community tools, trading features, and token reputation in one platform.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 3</div></div>
+          </div>
+          <div class="modal-card">
+            <span class="place-badge" style="top:-9px;background:var(--surface4);color:var(--text);">WINNER #15</span>
+            <div class="hack-name">BurnApp</div>
+            <div class="hack-handle"><a href="https://x.com/BurnAppBot" target="_blank">@BurnAppBot</a></div>
+            <div class="hack-project">An automated buyback-and-burn engine for Bags tokens. Assign @BurnAppBot as a fee recipient and it automatically claims fees, buys back tokens, and burns them on-chain every 10 minutes.</div>
+            <div class="hack-prize"><div class="prize-amount">FUNDED</div><div class="prize-label">COHORT 3</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bad Actors in modal too -->
+      <div class="modal-cohort">
+        <div class="modal-cohort-title" style="color:var(--red);">⚠ Bad Actors <span class="bad-tag" style="font-size:9px;">ABANDONED COMMUNITY</span></div>
+        <div class="modal-grid">
+          <div class="modal-card bad-card">
+            <span class="place-badge bad-badge" style="top:-9px;">⚠ COHORT 1</span>
+            <div class="hack-name">GSD Foundation</div>
+            <div class="hack-handle"><a href="https://x.com/gsd_foundation" target="_blank">@gsd_foundation</a></div>
+            <div class="hack-project">Received $50,000 in Cohort 1, then deleted all socials and abandoned the project and community. Finn personally onboarded new developers to rescue what was built.</div>
+            <div class="hack-prize"><div class="prize-amount" style="color:var(--red);">RUGGED</div></div>
+          </div>
+          <div class="modal-card bad-card">
+            <span class="place-badge bad-badge" style="top:-9px;">⚠ COHORT 2</span>
+            <div class="hack-name">AgentKeys</div>
+            <div class="hack-handle"><a href="https://x.com/AgentKeysApp" target="_blank">@AgentKeysApp</a></div>
+            <div class="hack-project">Received $25,000 in Cohort 2, then abandoned the $oshi community token and relaunched on a competing launchpad — betraying the community that backed them from day one.</div>
+            <div class="hack-prize"><div class="prize-amount" style="color:var(--red);">RUGGED</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </div>
 
 <script>
-  // Remove black background from logo using canvas
-  const canvas = document.getElementById('logo-canvas');
-  const ctx = canvas.getContext('2d');
-  canvas.style.animation = 'logo-float 3s ease-in-out infinite';
-  canvas.style.filter = 'drop-shadow(0 0 18px #00ff41) drop-shadow(0 0 40px rgba(0,255,65,0.4))';
+function toggleMob(){document.getElementById('mobNav').classList.toggle('open');}
+function closeMob(){document.getElementById('mobNav').classList.remove('open');}
 
-  const img = new Image();
-  img.crossOrigin = 'anonymous';
-  img.src = 'logo.png';
-  img.onload = function() {
-    ctx.drawImage(img, 0, 0, 130, 130);
-    const imageData = ctx.getImageData(0, 0, 130, 130);
-    const data = imageData.data;
-    for (let i = 0; i < data.length; i += 4) {
-      const r = data[i], g = data[i+1], b = data[i+2];
-      // Make dark/black pixels transparent
-      if (r < 40 && g < 40 && b < 40) {
-        data[i+3] = 0;
-      }
-    }
-    ctx.putImageData(imageData, 0, 0);
-  };
+function copyCA(){
+  navigator.clipboard.writeText('4DmFXyEuDup36PeiTT2cJjsoL8mmPu2obdXzupd9BAGS').then(()=>{
+    const b=document.querySelector('.ca-copy');
+    b.textContent='COPIED!';
+    setTimeout(()=>{b.textContent='COPY';},2000);
+  }).catch(()=>{});
+}
 
-  // Copy CA
-  function copyCA() {
-    const ca = document.getElementById('ca-code').textContent;
-    navigator.clipboard.writeText(ca).then(() => {
-      const btn = document.getElementById('copy-btn');
-      btn.textContent = 'COPIED!';
-      btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 2000);
-    });
+function openModal(){
+  document.getElementById('hackModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('hackModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+function handleOverlayClick(e){
+  if(e.target===document.getElementById('hackModal'))closeModal();
+}
+
+// THEME TOGGLE
+function toggleTheme(){
+  const isLight=document.body.classList.toggle('light-mode');
+  document.getElementById('lbl-dark').classList.toggle('active',!isLight);
+  document.getElementById('lbl-light').classList.toggle('active',isLight);
+  const mobCur=document.getElementById('mob-theme-cur');
+  if(mobCur)mobCur.textContent=isLight?'LIGHT':'DARK';
+  try{localStorage.setItem('bags-theme',isLight?'light':'dark');}catch(e){}
+}
+// Restore saved theme
+try{
+  if(localStorage.getItem('bags-theme')==='light'){
+    document.body.classList.add('light-mode');
+    document.getElementById('lbl-dark').classList.remove('active');
+    document.getElementById('lbl-light').classList.add('active');
   }
+}catch(e){}
+
+// Responsive about grid
+const ag=document.querySelector('.about-grid');
+function fixGrid(){if(ag)ag.style.gridTemplateColumns=window.innerWidth<700?'1fr':'1fr 1fr';}
+fixGrid();window.addEventListener('resize',fixGrid);
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 </script>
 </body>
 </html>
